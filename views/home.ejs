@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+      integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+      crossorigin="anonymous"
+    />
+    <script src="https://kit.fontawesome.com/93db5d27fe.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/css/style.css" />
+    <title>Home</title>
+  </head>
+  <body>
+    <div class="fundo">
+      <header>
+        <nav class="barra-navegacao">
+          <img
+            class="logo"
+            src="https://www.uma.pt/wp-content/themes/uma/images/servicos_imgs/logos_uma/logo1.png"
+            alt=""
+          />
+        </nav>
+      </header>
+      <div class="myContainer">
+        <div class="row">
+          <div class="col-8 welcomeMessage">
+            <h1>Welcome</h1>
+            <h2>@<%= username %></h2>
+          </div>
+          <div class="col-4">
+            <img src="<%= imagem %>" class="profileImage">
+          </div>
+        </div></br>
+
+        <button class="button-color buttons panelButtons" onclick="createRoom()">Create Room</button>  
+
+        <button class="button-color buttons panelButtons" onclick="joinRoom()">Join Room</button>
+
+        <a href="profile">
+          <button class="button-color buttons panelButtons">Profile</button>
+        </a>
+
+        <a href="statistics">
+        <button class="button-color buttons panelButtons">Statistics</button>
+        </a>
+
+        <a href="logout">
+        <button class="btn button-mainColor buttons" style="width: 50%; margin: 25px 25%;"> 
+           Sign out <i class="fa-solid fa-right-from-bracket" style="margin-left: 10px;"></i>
+        </button>
+        </a>
+      </div>
+
+      <div class="footer">
+        <footer>Copyright © Universidade da Madeira</footer>
+      </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+
+      function createRoom() {
+        const roomID = generateRoomId();
+        socket.emit('createRoom', roomID); // Emit 'createRoom' event
+        // Handle the 'roomCreated' event to redirect the creator to the newly created room
+        socket.on('roomCreated', (roomID) => {
+          console.log(`Created Room ID: ${roomID}`);
+          window.location.href = "/room?id=" + roomID;
+        });   
+      }
+
+      function joinRoom() {
+        const room = prompt('Enter the room ID:');
+        const player = { username: "<%= username %>" };
+        socket.emit('joinRoom', player, room);
+        window.location.href = "/room?id=" + room;
+      }
+
+      function generateRoomId() {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let roomId = '';
+        for (let i = 0; i < 6; i++) {
+          roomId += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        return roomId;
+      }
+    </script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

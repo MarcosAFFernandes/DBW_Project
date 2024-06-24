@@ -1,0 +1,194 @@
+:root {
+  --maincolor: rgb(32, 159, 181);
+  --maincolorhover: rgb(12, 139, 161);
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 25px;
+  padding: 0;
+  margin: 0;
+  color: black;
+}
+
+.fundo {
+  height: 100vh;
+  background-color: rgba(230, 233, 239, 1);
+}
+
+/** HEADER **/
+.barra-navegacao {
+  overflow: hidden;
+  padding: 25px 15px;
+}
+
+.barra-navegacao > i {
+color: rgb(76, 79, 105);
+margin-left: 15px;
+}
+
+.barra-navegacao > i:hover {
+  color: rgb(56, 59, 85);
+}
+
+.logo {
+  width: 100px;
+  height: 50px;
+  float: left;
+  margin-left: 15px;
+}
+/** END HEADER **/
+
+/** WELCOME PAGE BODY **/
+.myContainer {
+  width: 95%;
+  max-width: 555px;
+  height: auto;
+  margin: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.welcomeMessage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+h1 {
+  text-align: center;
+  font-size: 50px;
+  color: rgb(76, 79, 105);
+}
+
+h2 {
+  text-align: center;
+  color: rgb(76, 79, 105);
+}
+
+.profileImage {
+  width: 100%;
+  height: auto;
+  border: 1px solid rgb(76, 79, 105);
+  border-radius: 150px;
+  aspect-ratio: 1/1;
+  position: relative;
+}
+
+.updateImage {
+  text-align: center;
+  font-size: 13px;
+  background-color: rgb(204, 208, 218);
+  border-radius: 10px;
+}
+
+.updateButton {
+  font-size: 8px;
+  border-radius: 15px;
+  margin-top: 5px;
+}
+
+.question-selected {
+  background-color: rgb(190, 192, 209);
+}
+
+.form-label {
+  font-size: 18px;
+  color: rgb(0, 0, 0);
+}
+
+.form-control {
+  border-radius: 15px;
+  background-color: rgb(204, 208, 218);
+  color: rgb(76, 79, 105);
+  height: 50px;
+}
+
+.form-control:focus {
+  background-color: rgb(184, 188, 198);
+  color: rgb(76, 79, 105);
+}
+
+.invalid-feedback {
+  color: red;
+  font-size: 14px;
+  margin-top: 3px;
+  padding: 5px 0px;
+  border-radius: 5px;
+}
+
+.form-error {
+  font-size: 14px;
+  margin-top: 3px;
+  padding: 5px 0px;
+  color: red;
+}
+
+.form-errorUsername {
+  visibility: hidden; /**Quando estiver a escrever o back-end, não esquecer de chamar esta função e mudar-la para visible com o JS**/
+}
+
+.form-errorPassword {
+  visibility: hidden; /**Quando estiver a escrever o back-end, não esquecer de chamar esta função e mudar-la para visible com o JS**/
+}
+/** END WELCOME PAGE **/
+
+/** BUTTONS **/
+.button-mainColor {
+  background-color: var(--maincolor);
+  color: rgb(230, 233, 239);
+  font-weight: bold;
+}
+
+.button-mainColor:hover {
+  background-color: var(--maincolorhover);
+  color: white;
+}
+
+.button-color {
+  background-color: rgb(230, 233, 239);
+  border-style: double;
+  border-color: rgb(92, 95, 119);
+}
+
+.button-color:hover {
+  background-color: rgb(210, 212, 229);
+  color: black;
+}
+
+.buttons {
+  font-size: 22px;
+  height: 50px;
+  width: 100%;
+  border-radius: 15px;
+}
+
+.panelButtons {
+  margin-bottom: 15px;
+}
+
+.button-link {
+  text-decoration: underline;
+  color: rgb(76, 79, 105);
+  width: 100%;
+  font-size: 18px;
+}
+
+.button-link:hover {
+  color: black;
+}
+/** END BUTTONS **/
+
+/** FOOTER **/
+.footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  font-size: 15px;
+  text-align: center;
+  background-color: white;
+}
+/** END FOOTER **/
