@@ -32,6 +32,8 @@ O **Um, Contra Todos** é um jogo multijogador em tempo real onde os jogadores c
 - Node.js 16.0 ou superior
 - NPM 8.0 ou superior (Se não tiver instalado execute o comando npm install no terminal)
 - MongoDB Atlas ou instância local
+- Criação de um ficheiro `.env`na raiz do projeto com a variável de ambiente para a conexão MongoDB, no formato:
+  ``` MONGODB_URI=mongodb+srv://your_user:your_password@your_cluster.mongodb.net/your_db?retryWrites=true&w=majority ```
 
 ## Como Executar
 
