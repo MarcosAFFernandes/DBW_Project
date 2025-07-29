@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+      integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://kit.fontawesome.com/93db5d27fe.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" href="/css/style.css" />
+    <title>Room</title>
+  </head>
+  <body>
+    <div class="fundo">
+      <header>
+        <nav class="barra-navegacao">
+          <i class="fa-solid fa-arrow-left" onclick="window.location.href = '/home';"></i>
+          <h1 id="mainTitle">Private Room</h1>
+          <h2 id="roomID"></h2>
+        </nav>
+      </header>
+
+      <div class="myContainer">
+        <div id="playersList"></div>
+        <button id="ready" class="btn button-mainColor buttons">Ready</button>
+        </br></br>
+        <button id="startGame" class="btn button-mainColor buttons" disabled>Start Game</button>
+      
+        <div id="questionsContainer" style="display: none">
+          <h2 id="question" style="font-size: 22px; color: rgb(76, 79, 105);"></h2>
+          <ul id="options" style="list-style-type: none; margin: 0; padding: 0;"></ul>
+          <button id="answerButton" class="btn button-mainColor buttons">Responder</button>
+        </div>
+
+        <div id="winnerContainer" style="display: none">
+          <h2 id="winnerText"></h2>
+        </div>
+      </div>
+
+      <div class="footer">
+        <footer>Copyright © Universidade da Madeira</footer>
+      </div>
+    </div>
+
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+
+      let roomId;
+
+      window.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        roomId = urlParams.get('id');
+        document.getElementById("roomID").textContent = "#" + roomId;
+      });
+
+      document.getElementById("ready").addEventListener("click", () => {
+        const player = "<%= username %>";
+        const imagem = "/<%= imagem %>";
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomID = urlParams.get('id');
+        console.log(`URL: ${roomID}`)
+        socket.emit("playerReady", roomID, player, imagem);
+
+        const readyButton = document.getElementById("ready");
+        readyButton.style.visibility = "hidden";
+      });
+
+      socket.on("reloadPlayersList", (players) => {
+        const playersList = document.getElementById("playersList");
+        playersList.innerHTML = "";
+
+        const mainDiv = document.createElement("div");
+        mainDiv.style.margin = "0 auto";
+        mainDiv.id = roomId;
+
+        // Create container element
+        const gridContainer = document.createElement("div");
+        gridContainer.style.display = "grid";
+        gridContainer.style.gridTemplateColumns = "50% 50%";
+        gridContainer.style.gridTemplateRows = "50% 50%";
+        gridContainer.style.gap = "10px";
+
+        players.forEach((player) => {
+          // Create individual grid item
+          const gridItem = document.createElement("div");
+          gridItem.style.display = "flex";
+          gridItem.style.flexDirection = "column";
+          gridItem.style.alignItems = "center";
+
+          // Create paragraph element
+          const playerName = document.createElement("p");
+          playerName.textContent = player.username;
+          playerName.style.fontWeight = "bold";
+
+          // Create image element
+          const playerAvatar = document.createElement("img");
+          playerAvatar.className = "profileImage"; //CSS
+          playerAvatar.style = "width: 150px; border: 8px #45FF33 solid";
+          playerAvatar.src = `${player.imagem}`;
+
+          gridItem.appendChild(playerName);
+          gridItem.appendChild(playerAvatar);
+
+          mainDiv.appendChild(gridContainer);
+          gridContainer.appendChild(gridItem);
+        });
+
+        // Append the grid container to the parent element
+        playersList.appendChild(mainDiv);
+
+        const btnStartGame = document.getElementById("startGame");
+        if (players.length >= 2) {
+          btnStartGame.disabled = false;
+        } else {
+          btnStartGame.disabled = true;
+        }
+      });
+
+      document.getElementById("startGame").addEventListener("click", () => {
+        socket.emit("prepareGame");
+      });
+
+      socket.on("startGame", () => {
+        const perguntaContainer = document.getElementById("questionsContainer");
+        const perguntaElement = document.getElementById("question");
+        const opcoesElement = document.getElementById("options");
+        const answerButton = document.getElementById("answerButton");
+        
+
+        perguntaElement.textContent = "Carregando pergunta...";
+        opcoesElement.innerHTML = "";
+        answerButton.disabled = true;
+        perguntaContainer.style.display = "block";
+      });
+
+      socket.on("showQuestion", (question) => {
+        const perguntaContainer = document.getElementById("questionsContainer");
+        const perguntaElement = document.getElementById("question");
+        const opcoesElement = document.getElementById("options");
+        const answerButton = document.getElementById("answerButton");
+        const playersList = document.getElementById("playersList");
+        const startGameButton = document.getElementById("startGame");
+        const mainTitle = document.getElementById("mainTitle");
+
+        perguntaElement.textContent = question.question;
+        opcoesElement.innerHTML = "";
+
+        let selectedOption = null; // Variable to store the selected option
+
+        question.options.forEach((option, index) => {
+          const li = document.createElement("li");
+          const button = document.createElement("button");
+          button.type = "button";
+          button.value = index;
+          button.textContent = option;
+          button.classList.add("button-color");
+          button.style = "border-radius: 15px; width: 100%; margin-bottom: 10px; padding: 5px 0;";
+          button.addEventListener("click", () => {
+            // Remove the 'button-selected' class from the previously selected button
+            const previousButton = document.querySelector(".question-selected");
+            if (previousButton) {
+              previousButton.classList.add("button-color");
+              previousButton.classList.remove("question-selected");
+            }
+
+            // Add the 'button-selected' class to the clicked button
+            button.classList.remove("button-color");
+            button.classList.add("question-selected");
+
+            // Update the selected option
+            selectedOption = index;
+            console.log("Selected Option: ", selectedOption);
+          });
+          li.appendChild(button);
+          opcoesElement.appendChild(li);
+        });
+
+        answerButton.disabled = false;
+        perguntaContainer.style.display = "block";
+
+        mainTitle.textContent = `Questions`;
+        startGameButton.style.display = "none";
+        playersList.style.display = "none";
+      });
+
+      document.getElementById("answerButton").addEventListener("click", () => {
+        const selectedButton = document.querySelector(".question-selected");
+        if (selectedButton) {
+          const selectedOption = selectedButton.value;
+          socket.emit("answerQuestion", selectedOption);
+          document.getElementById("answerButton").disabled = true;
+        }
+      });
+
+      socket.on("showWinner", (winner) => {
+        const winnerContainer = document.getElementById("winnerContainer");
+        const winnerText = document.getElementById("winnerText");
+        
+        // Display the winner
+        winnerText.textContent = `The winner is ${winner}!`;
+        winnerContainer.style.display = "block";
+      });
+    </script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
